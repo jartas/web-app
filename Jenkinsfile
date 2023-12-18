@@ -1,26 +1,35 @@
 pipeline {
     agent any
 
+    environment { 
+        NAME = 'vignesh'
+    }
+
     triggers {
         cron('H/15 * * * *')
     }
+
     parameters {
-        choice(name: 'environment', choices: ['dev', 'test', 'prod'], description: 'Select environment to deploy')
+        choice(name: 'environment', choices: ['dev', 'uat', 'prod'], description: 'Select environment to deploy')
     }
+
     stages {
         stage ('Print') {
+            environment { 
+                MESSAGE = 'Hello Devops Engineers'
+            }
             steps {
-                echo "Hello Devops Engineers"
+                echo "$MESSAGE"
             }
         }
     }
 
     post {
         success {
-            echo 'Pipilena was successfully deployed'
+            echo 'I will say Hello only if job is success'
         }
         failure {
-            echo 'Something is wrong, check logs'
+            echo 'I will say Hello only if job is failure'
         }
     }
 }
