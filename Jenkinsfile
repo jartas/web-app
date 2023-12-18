@@ -6,14 +6,14 @@ dockerImage = ''
 }
 agent any
 stages {
-stage('Building our image') {
+stage('Building image') {
 steps{
 script {
 dockerImage = docker.build registry + ":$BUILD_NUMBER"
 }
 }
 }
-stage('Deploy our image') {
+stage('Push image') {
 steps{
 script {
 docker.withRegistry( 'https://ghcr.io', registryCredential) {
@@ -22,10 +22,19 @@ dockerImage.push()
 }
 }
 }
-stage('Cleaning up') {
+stage('Start applicaton') {
 steps{
-sh "docker rmi $registry:$BUILD_NUMBER"
+sh "docker stop $registry:$BUILD_NUMBER | true"
+sh "docker rm $registry:$BUILD_NUMBER | true"
+sh "docker run --name web-app -d -p 5001:5000 $registry:$BUILD_NUMBER"
 }
 }
 }
+}
+//stage('Cleaning up') {
+//steps{
+//sh "docker rmi $registry:$BUILD_NUMBER"
+//}
+//}
+//}
 }
