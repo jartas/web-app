@@ -1,6 +1,7 @@
 pipeline {
     agent any
     stages {
+        def path = tool name: 'gradle-4.7', type: 'gradle'
         stage('Build') {
             agent {
                 docker {
