@@ -31,4 +31,15 @@ pipeline {
             }
         }
     }
+        post {
+        always { 
+            echo 'Pipeline was created by Tomas !'
+        }
+        success {
+            echo 'Application was successfully deployed'
+        }
+        failure {
+            echo 'Something is wrong please check logs'
+        }
+    }
 }
