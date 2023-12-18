@@ -16,7 +16,7 @@ dockerImage = docker.build registry + ":$BUILD_NUMBER"
 stage('Deploy our image') {
 steps{
 script {
-docker.withRegistry( '', registryCredential) {
+docker.withRegistry( 'https://ghcr.io', registryCredential) {
 dockerImage.push()
 }
 }
