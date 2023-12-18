@@ -1,14 +1,19 @@
 pipeline {
-    agent docker
-
+    agent any
     stages {
         stage('Build') {
-            steps {
-                // Get some code from a GitHub repository
-                git 'https://github.com/jartas/web-app.git'
-                sh 'docker build . -t jartas/web-app'
+            agent {
+                docker {
+                    image 'ghcr.io/jartas/web-app:latest'
+                    // Run the container on the node specified at the
+                    // top-level of the Pipeline, in the same workspace,
+                    // rather than on a new node entirely:
+                    reuseNode true
+                }
             }
-
+            steps {
+                sh 'gradle --version'
+            }
         }
     }
 }
