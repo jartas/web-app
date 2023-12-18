@@ -1,35 +1,41 @@
 pipeline {
     agent any
-
-    environment { 
-        NAME = 'vignesh'
+    tools {
+        maven 'maven-3.6.3' 
     }
-
-    triggers {
-        cron('H/15 * * * *')
+    environment {
+        DATE = new Date().format('yy.M')
+        TAG = "${DATE}.${BUILD_NUMBER}"
     }
-
-    parameters {
-        choice(name: 'environment', choices: ['dev', 'uat', 'prod'], description: 'Select environment to deploy')
-    }
-
     stages {
-        stage ('Print') {
-            environment { 
-                MESSAGE = 'Hello Devops Engineers'
-            }
+        stage ('Build') {
             steps {
-                echo "$MESSAGE"
+                sh 'mvn clean package'
             }
         }
-    }
-
-    post {
-        success {
-            echo 'I will say Hello only if job is success'
+        stage('Docker Build') {
+            steps {
+                script {
+                    docker.build("vigneshsweekaran/hello-world:${TAG}")
+                }
+            }
         }
-        failure {
-            echo 'I will say Hello only if job is failure'
+	    stage('Pushing Docker Image to Dockerhub') {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', 'docker_credential') {
+                        docker.image("vigneshsweekaran/hello-world:${TAG}").push()
+                        docker.image("vigneshsweekaran/hello-world:${TAG}").push("latest")
+                    }
+                }
+            }
+        }
+        stage('Deploy'){
+            steps {
+                sh "docker stop hello-world | true"
+                sh "docker rm hello-world | true"
+                sh "docker run --name hello-world -d -p 9004:8080 vigneshsweekaran/hello-world:${TAG}"
+            }
         }
     }
 }
