@@ -6,7 +6,7 @@ pipeline {
             steps {
                 // Get some code from a GitHub repository
                 git 'https://github.com/jartas/web-app.git'
-                sh 'docker build -t jartas/web-app:latest .'
+                sh 'docker build . -t ghcr.io/jartas/web-app:latest'
             }
 
         }
