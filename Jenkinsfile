@@ -3,8 +3,8 @@ pipeline {
 stages {
 stage(‘Build’) {
 steps {
-git ‘https://github.com/jartas/web-app.git’
-sh ‘docker build -t jartas/webapp:${BUILD_NUMBER} .’
+git 'https://github.com/jartas/web-app.git'
+sh 'docker build -t jartas/webapp:${BUILD_NUMBER} .'
 }
 }
 stage(‘Push’) {
