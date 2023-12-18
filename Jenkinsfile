@@ -1,18 +1,10 @@
 pipeline {
     agent any
-    tools {
-        maven 'maven-3.9.6' 
-    }
     environment {
         DATE = new Date().format('yy.M')
         TAG = "${DATE}.${BUILD_NUMBER}"
     }
     stages {
-        stage ('Build') {
-            steps {
-                sh 'mvn clean package'
-            }
-        }
         stage('Docker Build') {
             steps {
                 script {
