@@ -1,33 +1,36 @@
 pipeline {
-    agent any
-    environment {
-        DATE = new Date().format('yy.M')
-        TAG = "${DATE}.${BUILD_NUMBER}"
-    }
-    stages {
-        stage('Docker Build') {
-            steps {
-                script {
-                    docker.build("vigneshsweekaran/hello-world:${TAG}")
-                }
-            }
-        }
-	    stage('Pushing Docker Image to Dockerhub') {
-            steps {
-                script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'docker_credential') {
-                        docker.image("vigneshsweekaran/hello-world:${TAG}").push()
-                        docker.image("vigneshsweekaran/hello-world:${TAG}").push("latest")
-                    }
-                }
-            }
-        }
-        stage('Deploy'){
-            steps {
-                sh "docker stop hello-world | true"
-                sh "docker rm hello-world | true"
-                sh "docker run --name hello-world -d -p 9004:8080 vigneshsweekaran/hello-world:${TAG}"
-            }
-        }
-    }
+environment {
+registry = "jartas/web-app"
+registryCredential = '041803c2-b86c-4638-aa47-4c4e441d7baa'
+dockerImage = ''
+}
+agent any
+stages {
+stage('Cloning our Git') {
+steps {
+git 'https://github.com/YourGithubAccount/YourGithubRepository.git'
+}
+}
+stage('Building our image') {
+steps{
+script {
+dockerImage = docker.build registry + ":$BUILD_NUMBER"
+}
+}
+}
+stage('Deploy our image') {
+steps{
+script {
+docker.withRegistry( '', registryCredential ) {
+dockerImage.push()
+}
+}
+}
+}
+stage('Cleaning up') {
+steps{
+sh "docker rmi $registry:$BUILD_NUMBER"
+}
+}
+}
 }
