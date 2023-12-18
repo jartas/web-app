@@ -48,3 +48,4 @@ post {
         failure {
             echo 'Something is wrong, please check logs'
         }
+}
