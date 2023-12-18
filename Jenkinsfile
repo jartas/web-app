@@ -9,7 +9,6 @@ dockerImage = ''
     }
 agent any
 stages {
-    stages {
         stage ('Print') {
             steps {
                 echo "Hello Devops Engineers"
